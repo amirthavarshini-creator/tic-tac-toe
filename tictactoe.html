@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic-Tac-Toe Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #000, #ff66b2); /* Black to Pink Gradient */
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      scroll-behavior: smooth;
+    }
+
+    .game-container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h1 {
+      color: #fff;
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7); /* 3D effect */
+      letter-spacing: 2px;
+    }
+
+    .game-board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, black, pink); /* Black to Pink Gradient */
+      font-size: 2rem;
+      color: #fff;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    /* Hover Effect */
+    .cell:hover {
+      transform: scale(1.1);
+      background-color: #ff66b2; /* Change color when hovered */
+    }
+
+    /* Click Animation (Bounce) */
+    .cell.clicked {
+      animation: bounce 0.3s ease forwards;
+    }
+
+    @keyframes bounce {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.2);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Winning Animation */
+    .win-line {
+      animation: highlight 1s ease forwards;
+    }
+
+    @keyframes highlight {
+      0% {
+        background-color: rgba(255, 0, 0, 0.5);
+      }
+      100% {
+        background-color: rgba(255, 0, 0, 1);
+      }
+    }
+
+    /* Status text highlighting */
+    #game-status {
+      font-size: 1.5rem;
+      margin-top: 10px;
+      padding: 5px 10px;
+      border-radius: 5px;
+      font-weight: bold;
+      position: absolute;
+      animation: falling-text 3s ease-in-out infinite, fade-out 2s forwards;
+    }
+
+    @keyframes falling-text {
+      0% {
+        top: -50px;
+        opacity: 1;
+      }
+      50% {
+        top: 50px;
+        opacity: 0.5;
+      }
+      100% {
+        top: -50px;
+        opacity: 0;
+      }
+    }
+
+    .x-turn {
+      background-color: #ff66b2; /* Pink for X's turn */
+      color: #fff;
+    }
+
+    .o-turn {
+      background-color: #000; /* Black for O's turn */
+      color: #ff66b2; /* Pink text for O's turn */
+    }
+
+    button {
+      padding: 15px 30px;
+      background-color: #000; /* Black background */
+      color: #fff; /* White text */
+      border: 2px solid #fff; /* White border */
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: center;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    button:hover {
+      background-color: #fff; /* White background on hover */
+      color: #000; /* Black text on hover */
+      transform: scale(1.05); /* Slight grow effect */
+    }
+
+    button i {
+      font-size: 1.4rem; /* Larger icon size */
+    }
+
+    .info {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center; /* Center the reset button */
+    }
+
+    /* Congratulatory Message */
+    .congrats-message {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      color: #ff66b2;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+      animation: blast 1s ease-in-out forwards;
+      display: none; /* Initially hidden */
+    }
+
+    @keyframes blast {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0;
+      }
+    }
+
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome for icons -->
+</head>
+<body>
+  <div class="game-container">
+    <h1>Tic-Tac-Toe</h1>
+    <div class="game-board">
+      <div class="cell" id="cell-0"></div>
+      <div class="cell" id="cell-1"></div>
+      <div class="cell" id="cell-2"></div>
+      <div class="cell" id="cell-3"></div>
+      <div class="cell" id="cell-4"></div>
+      <div class="cell" id="cell-5"></div>
+      <div class="cell" id="cell-6"></div>
+      <div class="cell" id="cell-7"></div>
+      <div class="cell" id="cell-8"></div>
+    </div>
+    <div class="info">
+      <p id="game-status" class="x-turn">Player X's turn</p> <!-- Initial class for X's turn -->
+      <button id="reset-btn">
+        <i class="fas fa-redo"></i> Reset Game
+      </button>
+    </div>
+    <div id="congrats" class="congrats-message">Congratulations!</div> <!-- Congratulatory Message -->
+  </div>
+
+  <script>
+    let board = ['', '', '', '', '', '', '', '', ''];
+    let currentPlayer = 'X';
+    let gameActive = true;
+    const gameStatus = document.getElementById('game-status');
+    const resetButton = document.getElementById('reset-btn');
+    const congratsMessage = document.getElementById('congrats');
+
+    const checkWinner = () => {
+      const winPatterns = [
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        [0, 4, 8],
+        [2, 4, 6]
+      ];
+
+      for (let pattern of winPatterns) {
+        const [a, b, c] = pattern;
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+          gameActive = false;
+          gameStatus.textContent = `${currentPlayer} wins!`;
+          document.getElementById(`cell-${a}`).classList.add('win-line');
+          document.getElementById(`cell-${b}`).classList.add('win-line');
+          document.getElementById(`cell-${c}`).classList.add('win-line');
+          
+          // Display congratulatory message
+          congratsMessage.style.display = 'block';
+          setTimeout(() => congratsMessage.style.display = 'none', 2000);
+
+          return;
+        }
+      }
+
+      if (!board.includes('')) {
+        gameActive = false;
+        gameStatus.textContent = 'It\'s a draw!';
+      }
+    };
+
+    const handleClick = (index) => {
+      if (board[index] || !gameActive) return;
+
+      board[index] = currentPlayer;
+      const cell = document.getElementById(`cell-${index}`);
+      cell.textContent = currentPlayer;
+      cell.classList.add('clicked'); // Trigger the click animation
+
+      checkWinner();
+
+      if (gameActive) {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        gameStatus.textContent = `${currentPlayer}'s turn`;
+        
+        // Update the game status to reflect the current player turn
+        if (currentPlayer === 'X') {
+          gameStatus.classList.remove('o-turn');
+          gameStatus.classList.add('x-turn');
+        } else {
+          gameStatus.classList.remove('x-turn');
+          gameStatus.classList.add('o-turn');
+        }
+      }
+    };
+
+    const resetGame = () => {
+      board = ['', '', '', '', '', '', '', '', ''];
+      gameActive = true;
+      currentPlayer = 'X';
+      gameStatus.textContent = `${currentPlayer}'s turn`;
+
+      // Set default class for X's turn
+      gameStatus.classList.remove('o-turn');
+      gameStatus.classList.add('x-turn');
+
+      for (let i = 0; i < 9; i++) {
+        const cell = document.getElementById(`cell-${i}`);
+        cell.textContent = '';
+        cell.classList.remove('clicked', 'win-line'); // Remove animations
+      }
+
+      congratsMessage.style.display = 'none'; // Hide congrats message
+    };
+
+    for (let i = 0; i < 9; i++) {
+      document.getElementById(`cell-${i}`).addEventListener('click', () => handleClick(i));
+    }
+
+    resetButton.addEventListener('click', resetGame);
+  </script>
+</body>
+</html>
+
+
+
